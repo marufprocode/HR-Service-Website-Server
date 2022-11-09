@@ -24,6 +24,103 @@ async function run() {
   
 run();
 
+const serviceCollection = client.db("hr-service").collection("services"); 
+const reviewCollection = client.db("hr-service").collection("reviews"); 
+
+app.get('/services', async (req, res) => {
+  try{
+    const limit = parseInt(req.query.limit);
+    const cursor = serviceCollection.find({});
+    if(limit){
+      const services = await cursor.limit(limit).toArray();
+      res.send(services);
+    }
+    else{
+      const services = await cursor.toArray();
+      res.send(services);
+    }
+  }
+  catch (error){
+    console.log(error.name.bgRed, error.message.bold);
+    res.send({
+      success: false,
+      error: error.message,
+    });
+  }
+})
+
+app.get('/services/:id', async (req, res) => {
+  try{
+    const id = req.params.id;
+    const service = await serviceCollection.findOne({_id: ObjectId(id)});
+    res.send(service);
+  }
+  catch (error){
+    console.log(error.name.bgRed, error.message.bold);
+    res.send({
+      success: false,
+      error: error.message,
+    });
+  }
+})
+
+app.post('/user-review', async (req, res) => {
+  try{
+    const userReview = req.body;
+    const result = await reviewCollection.insertOne(userReview);
+    if (result.insertedId){
+      res.send({
+        success: true,
+        message: 'Successfully addeded User Review'
+      })
+    }
+  }
+  catch (error){
+    console.log(error.name.bgRed, error.message.bold);
+    res.send({
+      success: false,
+      error: error.message,
+    });
+  }
+})
+app.post('/add-service', async (req, res) => {
+  try{
+    const service = req.body;
+    const result = await serviceCollection.insertOne(service);
+    if (result.insertedId){
+      res.send({
+        success: true,
+        message: 'Successfully addeded User Review'
+      })
+    }
+  }
+  catch (error){
+    console.log(error.name.bgRed, error.message.bold);
+    res.send({
+      success: false,
+      error: error.message,
+    });
+  }
+})
+
+app.get('/reviewsByTitle/:id', async (req, res)=> {
+  try{
+      const title = req.params.id;
+      console.log(title);
+      const cursor = reviewCollection.find({reviewItem:title});
+      const result = await cursor.toArray();
+      res.send(result);
+  }
+  catch (error){
+    console.log(error.name.bgRed, error.message.bold);
+    res.send({
+      success: false,
+      error: error.message,
+    });
+  }
+
+})
+
 
 app.get('/', (req, res) => {
     res.send('Hello From MongoDB')
