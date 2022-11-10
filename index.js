@@ -141,7 +141,7 @@ app.post('/add-service', async (req, res) => {
 app.get('/reviewsByTitle/:id', async (req, res)=> {
   try{
       const title = req.params.id;
-      const cursor = reviewCollection.find({reviewItem:title});
+      const cursor = reviewCollection.find({reviewItem:title}).sort({time: -1});
       const result = await cursor.toArray();
       res.send(result);
   }
