@@ -216,7 +216,6 @@ app.patch('/update-review/:id', verifyJwt, async (req, res) => {
   const id = req.params.id;
   try{
     const decoded = req.decoded;
-    console.log(req.body.email, decoded.email);
     if(decoded.email !== req.body.email){
       res.status(403).send({
         success: false,
