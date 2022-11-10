@@ -14,6 +14,7 @@ app.use(cors());
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@clusterforassignment.st86zeo.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
+// connect mongoDataBase 
 async function run() {
     try {
       await client.connect();
@@ -25,9 +26,11 @@ async function run() {
   
 run();
 
+// create list of collection 
 const serviceCollection = client.db("hr-service").collection("services"); 
 const reviewCollection = client.db("hr-service").collection("reviews"); 
 
+// verify JWT middleware 
 function verifyJwt (req, res, next) {
   const userJwtToken = req.headers.authorization;
 
@@ -53,6 +56,7 @@ function verifyJwt (req, res, next) {
   })
 }
 
+// Get Services For Home Page 
 app.get('/services', async (req, res) => {
   try{
     const limit = parseInt(req.query.limit);
