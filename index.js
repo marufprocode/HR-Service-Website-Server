@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const jwt = require('jsonwebtoken');
 const app = express();
 require('dotenv').config();
 const port = process.env.PORT || 5000;
@@ -26,6 +27,31 @@ run();
 
 const serviceCollection = client.db("hr-service").collection("services"); 
 const reviewCollection = client.db("hr-service").collection("reviews"); 
+
+function verifyJwt (req, res, next) {
+  const userJwtToken = req.headers.authorization;
+
+// if the user do not have any token simply return the users with a error status.
+  if (!userJwtToken){
+    return res.status(401).send({
+      success: false,
+      message: 'Unauthorized access' 
+    })
+  }
+// users token, let's verify
+  const token = userJwtToken.split(' ')[1];  // we received token with Bearer, so split and get only token
+// for varification JWT gives us a built in function like-
+	jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, function (err, decoded){
+    if(err) {
+      return res.status(401).send({
+        success: false,
+        message: 'Forbidden access' 
+      })
+    }
+    req.decoded = decoded;
+    next();
+  })
+}
 
 app.get('/services', async (req, res) => {
   try{
@@ -106,7 +132,6 @@ app.post('/add-service', async (req, res) => {
 app.get('/reviewsByTitle/:id', async (req, res)=> {
   try{
       const title = req.params.id;
-      console.log(title);
       const cursor = reviewCollection.find({reviewItem:title});
       const result = await cursor.toArray();
       res.send(result);
@@ -121,8 +146,15 @@ app.get('/reviewsByTitle/:id', async (req, res)=> {
 
 })
 
-app.get('/user-review/:id', async (req, res)=> {
+app.get('/user-review/:id', verifyJwt, async (req, res)=> {
   try{
+      const decoded = req.decoded;
+      if(decoded.id !== req.params.id){
+        res.status(403).send({
+          success: false,
+          message: 'Unauthorized access'
+        })
+      }
       const id = req.params.id;
       const cursor = reviewCollection.find({userId:id});
       const result = await cursor.toArray();
@@ -139,11 +171,17 @@ app.get('/user-review/:id', async (req, res)=> {
   }
 
 })
-app.delete('/user-review/:id', async (req, res)=> {
+app.delete('/user-review/:id', verifyJwt, async (req, res)=> {
   try{
       const id = req.params.id;
+      const decoded = req.decoded;
+      if(decoded.email !== req.query.email){
+        res.status(403).send({
+          success: false,
+          message: 'Unauthorized access'
+        })
+      }
       const result = await reviewCollection.deleteOne({_id:ObjectId(id)});
-      console.log(result);
       if(result.deletedCount){
         res.send({
           success: true,
@@ -161,7 +199,48 @@ app.delete('/user-review/:id', async (req, res)=> {
 
 })
 
+app.patch('/update-review/:id', verifyJwt, async (req, res) => {
+  const id = req.params.id;
+  try{
+    const decoded = req.decoded;
+    console.log(req.body.email, decoded.email);
+    if(decoded.email !== req.body.email){
+      res.status(403).send({
+        success: false,
+        message: 'Unauthorized access'
+      })
+    }
+    const result = await reviewCollection.updateOne({_id: ObjectId(id)}, {$set: req.body});
+    if(result.matchedCount){
+      res.send({
+        success: true,
+        message: "successfully Updated review"
+      })
+    }
+  }
+  catch (error){
+    console.log(error.name, error.message);
+    res.send({
+      success: false,
+      error: error.message,
+    });
+  }
+})
 
+app.post('/jwt', async (req, res) => {
+  try{
+    const user = req.body; 
+    const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '15d'})
+    res.send({token});
+  }
+  catch (error) {
+    console.log(error.message);
+    res.send({
+      success: false,
+      error: error.message,
+      })
+  }
+})
 
 app.get('/', (req, res) => {
     res.send('Hello From MongoDB')
