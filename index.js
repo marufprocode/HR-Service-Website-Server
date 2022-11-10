@@ -41,7 +41,7 @@ app.get('/services', async (req, res) => {
     }
   }
   catch (error){
-    console.log(error.name.bgRed, error.message.bold);
+    console.log(error.name, error.message);
     res.send({
       success: false,
       error: error.message,
@@ -56,7 +56,7 @@ app.get('/services/:id', async (req, res) => {
     res.send(service);
   }
   catch (error){
-    console.log(error.name.bgRed, error.message.bold);
+    console.log(error.name, error.message);
     res.send({
       success: false,
       error: error.message,
@@ -76,7 +76,7 @@ app.post('/user-review', async (req, res) => {
     }
   }
   catch (error){
-    console.log(error.name.bgRed, error.message.bold);
+    console.log(error.name, error.message);
     res.send({
       success: false,
       error: error.message,
@@ -95,7 +95,7 @@ app.post('/add-service', async (req, res) => {
     }
   }
   catch (error){
-    console.log(error.name.bgRed, error.message.bold);
+    console.log(error.name, error.message);
     res.send({
       success: false,
       error: error.message,
@@ -112,7 +112,7 @@ app.get('/reviewsByTitle/:id', async (req, res)=> {
       res.send(result);
   }
   catch (error){
-    console.log(error.name.bgRed, error.message.bold);
+    console.log(error.name, error.message);
     res.send({
       success: false,
       error: error.message,
@@ -131,7 +131,7 @@ app.get('/user-review/:id', async (req, res)=> {
       }
   }
   catch (error){
-    console.log(error.name.bgRed, error.message.bold);
+    console.log(error.name, error.message);
     res.send({
       success: false,
       error: error.message,
@@ -152,7 +152,7 @@ app.delete('/user-review/:id', async (req, res)=> {
       }
   }
   catch (error){
-    console.log(error.name.bgRed, error.message.bold);
+    console.log(error.name, error.message);
     res.send({
       success: false,
       error: error.message,
@@ -160,6 +160,7 @@ app.delete('/user-review/:id', async (req, res)=> {
   }
 
 })
+
 
 
 app.get('/', (req, res) => {
