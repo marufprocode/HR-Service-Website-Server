@@ -121,6 +121,46 @@ app.get('/reviewsByTitle/:id', async (req, res)=> {
 
 })
 
+app.get('/user-review/:id', async (req, res)=> {
+  try{
+      const id = req.params.id;
+      const cursor = reviewCollection.find({userId:id});
+      const result = await cursor.toArray();
+      if(result.length){
+        res.send(result);
+      }
+  }
+  catch (error){
+    console.log(error.name.bgRed, error.message.bold);
+    res.send({
+      success: false,
+      error: error.message,
+    });
+  }
+
+})
+app.delete('/user-review/:id', async (req, res)=> {
+  try{
+      const id = req.params.id;
+      const result = await reviewCollection.deleteOne({_id:ObjectId(id)});
+      console.log(result);
+      if(result.deletedCount){
+        res.send({
+          success: true,
+          message: `Successfully Deleted the review with id ${id}`
+        });
+      }
+  }
+  catch (error){
+    console.log(error.name.bgRed, error.message.bold);
+    res.send({
+      success: false,
+      error: error.message,
+    });
+  }
+
+})
+
 
 app.get('/', (req, res) => {
     res.send('Hello From MongoDB')
