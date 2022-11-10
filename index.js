@@ -137,6 +137,7 @@ app.post('/add-service', async (req, res) => {
   }
 })
 
+//Get All the Reviews by specific item of services 
 app.get('/reviewsByTitle/:id', async (req, res)=> {
   try{
       const title = req.params.id;
@@ -154,6 +155,7 @@ app.get('/reviewsByTitle/:id', async (req, res)=> {
 
 })
 
+// Get All users review by Id protected by JWT Token
 app.get('/user-review/:id', verifyJwt, async (req, res)=> {
   try{
       const decoded = req.decoded;
@@ -179,6 +181,8 @@ app.get('/user-review/:id', verifyJwt, async (req, res)=> {
   }
 
 })
+
+// Delete review by Users 
 app.delete('/user-review/:id', verifyJwt, async (req, res)=> {
   try{
       const id = req.params.id;
@@ -207,6 +211,7 @@ app.delete('/user-review/:id', verifyJwt, async (req, res)=> {
 
 })
 
+//Edit and Update reviews by Users
 app.patch('/update-review/:id', verifyJwt, async (req, res) => {
   const id = req.params.id;
   try{
@@ -235,6 +240,7 @@ app.patch('/update-review/:id', verifyJwt, async (req, res) => {
   }
 })
 
+//Send JWT Token to the client side
 app.post('/jwt', async (req, res) => {
   try{
     const user = req.body; 
@@ -250,6 +256,7 @@ app.post('/jwt', async (req, res) => {
   }
 })
 
+//Testing API
 app.get('/', (req, res) => {
     res.send('Hello From MongoDB')
 });
