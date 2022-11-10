@@ -79,6 +79,7 @@ app.get('/services', async (req, res) => {
   }
 })
 
+// Get Specific Service Details 
 app.get('/services/:id', async (req, res) => {
   try{
     const id = req.params.id;
@@ -94,6 +95,7 @@ app.get('/services/:id', async (req, res) => {
   }
 })
 
+// Get Users Review Protected by JWT Token 
 app.post('/user-review', async (req, res) => {
   try{
     const userReview = req.body;
@@ -113,6 +115,8 @@ app.post('/user-review', async (req, res) => {
     });
   }
 })
+
+// Manage Add services by users
 app.post('/add-service', async (req, res) => {
   try{
     const service = req.body;
